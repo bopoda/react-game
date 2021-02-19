@@ -1,5 +1,6 @@
 import React from "react";
-import Cell from "./Cell";
+import GameCell from "./GameCell";
+import "./gamestyle.scss";
 
 const FIELD_SIZE = 9;
 
@@ -13,24 +14,28 @@ function Game() {
         return result;
     }
 
-    function renderGameRow(): React.ReactNode {
+    function renderGameRow(rowNumber: number): React.ReactNode {
         return (
-            <tr className="game-row">
+            <tr className="game-row" key={rowNumber}>
                 {range(1, FIELD_SIZE).map(i => {
-                    return <Cell cellValue={i}/>
+                    return <GameCell cellValue={i} key={rowNumber.toString() + i.toString()}/>
                 })}
             </tr>
         )
     }
 
     return (
-        <table className="game-table">
-            <tbody>
-            {range(1, FIELD_SIZE).map(rowNumber => {
-                return renderGameRow();
-            })}
-            </tbody>
-        </table>
+        <div className="game-wrapper">
+            <div className="game">
+                <table className="game-table">
+                    <tbody>
+                    {range(1, FIELD_SIZE).map(rowNumber => {
+                        return renderGameRow(rowNumber);
+                    })}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     )
 }
 
