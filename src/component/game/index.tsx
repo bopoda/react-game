@@ -9,6 +9,7 @@ const GAME_SOLUTION = "974123685261589734835746219319472568786951342452638197543
 
 function Game() {
     const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>([]);
+    const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
 
     function range(start: number, end: number): number[] {
         const result = [];
@@ -17,6 +18,16 @@ function Game() {
         }
 
         return result;
+    }
+
+    function selectCell(cellConfig: CellConfigInterface) {
+        setSelectedCell(cellConfig);
+    }
+
+    function isSelectedCell(cellConfig: CellConfigInterface): boolean {
+        return selectedCell !== undefined
+            && selectedCell.row === cellConfig.row
+            && selectedCell.col === cellConfig.col;
     }
 
     useEffect(() => {
@@ -51,8 +62,11 @@ function Game() {
         return (
             <tr className="game-row" key={rowNumber}>
                 {range(0, FIELD_SIZE - 1).map(columnNumber => {
-                    return <GameCell cellConfig={cells.length ? cells[rowNumber][columnNumber] : null}
+                    const cellConfig = cells.length ? cells[rowNumber][columnNumber] : null;
+                    return <GameCell cellConfig={cellConfig}
                                      key={rowNumber.toString() + columnNumber.toString()}
+                                     selected={cellConfig ? isSelectedCell(cellConfig) : false}
+                                     selectCell={selectCell}
                     />
                 })}
             </tr>
