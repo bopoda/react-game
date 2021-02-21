@@ -20,10 +20,6 @@ function Game() {
         return result;
     }
 
-    function selectCell(cellConfig: CellConfigInterface) {
-        setSelectedCell(cellConfig);
-    }
-
     function isSelectedCell(cellConfig: CellConfigInterface): boolean {
         return selectedCell !== undefined
             && selectedCell.row === cellConfig.row
@@ -31,13 +27,24 @@ function Game() {
     }
 
     useEffect(() => {
+        document.addEventListener('keydown', onKeydown);
+        return () => {
+            document.removeEventListener('keydown', onKeydown);
+        }
+    }, [selectedCell]);
+
+    useEffect(() => {
         const timer = setTimeout(() => {
             startGame();
         }, 1000);
-        return () => clearTimeout(timer);
+
+        return () => {
+            clearTimeout(timer);
+        }
     }, []);
 
     function startGame(): void {
+        console.log('Start game....');
         const cellsTemp = new Array<Array<CellConfigInterface>>();
         let index = 0;
         for (let row = 0; row <= FIELD_SIZE - 1; row++) {
@@ -58,6 +65,27 @@ function Game() {
         setCells(cellsTemp);
     }
 
+    function onKeydown(e: KeyboardEvent): void {
+        console.log('key pressed:', e.key);
+
+        if (!selectedCell) {
+            console.log('No cell selected when clicked:', e.key);
+            return;
+        }
+
+        if (!e.code.match(/^Digit/)) {
+            return;
+        }
+
+        const newDigit = parseInt(e.key);
+
+        if (selectedCell.value !== newDigit && !selectedCell.prefilled) {
+            const newCells = JSON.parse(JSON.stringify(cells));
+            newCells[selectedCell.row][selectedCell.col].value = parseInt(e.key);
+            setCells(newCells);
+        }
+    }
+
     function renderGameRow(rowNumber: number): React.ReactNode {
         return (
             <tr className="game-row" key={rowNumber}>
@@ -66,7 +94,7 @@ function Game() {
                     return <GameCell cellConfig={cellConfig}
                                      key={rowNumber.toString() + columnNumber.toString()}
                                      selected={cellConfig ? isSelectedCell(cellConfig) : false}
-                                     selectCell={selectCell}
+                                     setSelectedCell={setSelectedCell}
                     />
                 })}
             </tr>

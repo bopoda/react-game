@@ -4,7 +4,7 @@ import {CellConfigInterface} from "./types";
 interface Props {
     cellConfig: CellConfigInterface|null
     selected: boolean
-    selectCell: any
+    setSelectedCell: any
 }
 
 function GameCell(props: Props) {
@@ -12,8 +12,11 @@ function GameCell(props: Props) {
 
     function onClick(): void {
         console.log('clicked cell:', cellConfig);
+        if (null === cellConfig) {
+            return;
+        }
 
-        props.selectCell(cellConfig);
+        props.setSelectedCell(cellConfig);
     }
 
     return (
