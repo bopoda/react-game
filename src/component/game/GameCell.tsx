@@ -21,7 +21,7 @@ function GameCell(props: Props) {
 
     return (
         <td className={"game-cell" + (props.selected ? " cell-selected" : "")} onClick={onClick}>
-            <div className="cell-value">
+            <div className={"cell-value" + (cellConfig?.prefilled ? " cell-prefilled" : "")}>
                 {cellConfig && cellConfig.value > 0 ? cellConfig.value : ''}
             </div>
         </td>

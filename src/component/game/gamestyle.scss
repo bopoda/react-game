@@ -117,4 +117,8 @@
     @media screen and (max-width: 800px) {
         font-size: 30px;
     }
+
+    &.cell-prefilled {
+        font-weight: 300;
+    }
 }
