@@ -1,14 +1,21 @@
 import React from "react";
+import {CellConfigInterface} from "./types";
 
 interface Props {
-    cellValue?: number
+    cellConfig: CellConfigInterface|null
 }
 
 function GameCell(props: Props) {
+    const {cellConfig} = props;
+
+    function onClick() {
+        console.log('clicked cell:', cellConfig);
+    }
+
     return (
-        <td className="game-cell">
+        <td className="game-cell" onClick={onClick}>
             <div className="cell-value">
-                {props.cellValue}
+                {cellConfig && cellConfig.value > 0 ? cellConfig.value : ''}
             </div>
         </td>
     )
