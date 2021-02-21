@@ -101,17 +101,32 @@ function Game() {
         )
     }
 
+    function solveAllCells() {
+        const newCells = JSON.parse(JSON.stringify(cells));
+
+        for (const row of newCells) {
+            for (const cell of row) {
+                cell.value = cell.solution;
+            }
+        }
+
+        setCells(newCells);
+    }
+
     return (
-        <div className="game-wrapper">
-            <div className="game">
-                <table className="game-table">
-                    <tbody>
-                    {range(0, FIELD_SIZE - 1).map(rowNumber => {
-                        return renderGameRow(rowNumber);
-                    })}
-                    </tbody>
-                </table>
+        <div>
+            <div className="game-wrapper">
+                <div className="game">
+                    <table className="game-table">
+                        <tbody>
+                        {range(0, FIELD_SIZE - 1).map(rowNumber => {
+                            return renderGameRow(rowNumber);
+                        })}
+                        </tbody>
+                    </table>
+                </div>
             </div>
+            <input type="submit" value="Solve all automatically" onClick={solveAllCells} />
         </div>
     )
 }
