@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import GameCell from "./GameCell";
 import "./gamestyle.scss";
-import {CellConfigInterface} from "./types";
+import {CellConfigInterface, CellValueType, CellSolutionType} from "./types";
 
 const FIELD_SIZE = 9;
 const GAME_MISSION = "970000600201509034830040010000402000706050002052038000500817006620394051000060403";
@@ -31,6 +31,7 @@ function Game() {
         return () => {
             document.removeEventListener('keydown', onKeydown);
         }
+        // eslint-disable-next-line
     }, [selectedCell]);
 
     useEffect(() => {
@@ -51,8 +52,8 @@ function Game() {
             cellsTemp[row] = new Array<CellConfigInterface>();
             for (let column = 0; column <= FIELD_SIZE - 1; column++) {
                 cellsTemp[row][column] = {
-                    value: parseInt(GAME_MISSION[index]),
-                    solution: parseInt(GAME_SOLUTION[index]),
+                    value: parseInt(GAME_MISSION[index]) as CellValueType,
+                    solution: parseInt(GAME_SOLUTION[index]) as CellSolutionType,
                     prefilled: GAME_MISSION[index] === GAME_SOLUTION[index],
                     row: row,
                     col: column
@@ -69,7 +70,7 @@ function Game() {
         console.log('key pressed:', e.key);
 
         if (!selectedCell) {
-            console.log('No cell selected when clicked:', e.key);
+            console.log('No cell selected when key pressed:', e.key);
             return;
         }
 
@@ -77,13 +78,21 @@ function Game() {
             return;
         }
 
-        const newDigit = parseInt(e.key);
+        const newValue = parseInt(e.key) as CellValueType;
 
-        if (selectedCell.value !== newDigit && !selectedCell.prefilled) {
+        changeCellValue(newValue);
+    }
+
+    function changeCellValue(newValue: CellValueType): void {
+        if (selectedCell && selectedCell.value !== newValue && !selectedCell.prefilled) {
             const newCells = JSON.parse(JSON.stringify(cells));
-            newCells[selectedCell.row][selectedCell.col].value = parseInt(e.key);
+            newCells[selectedCell.row][selectedCell.col].value = newValue;
             setCells(newCells);
         }
+    }
+
+    //TODO: finish if enough time
+    function highlightConflicts() {
     }
 
     function renderGameRow(rowNumber: number): React.ReactNode {

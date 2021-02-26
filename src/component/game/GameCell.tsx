@@ -19,8 +19,26 @@ function GameCell(props: Props) {
         props.setSelectedCell(cellConfig);
     }
 
+    function getCellClassName(): string {
+        const className = ['game-cell'];
+
+        if (props.selected) {
+            className.push("cell-selected");
+        }
+
+
+        if (cellConfig && cellConfig.value > 0
+        && cellConfig.value !== cellConfig.solution) {
+            className.push("cell-mistake");
+        }
+
+        return className.join(' ');
+    }
+
     return (
-        <td className={"game-cell" + (props.selected ? " cell-selected" : "")} onClick={onClick}>
+        <td className={getCellClassName()}
+            onClick={onClick}
+        >
             <div className={"cell-value" + (cellConfig?.prefilled ? " cell-prefilled" : "")}>
                 {cellConfig && cellConfig.value > 0 ? cellConfig.value : ''}
             </div>

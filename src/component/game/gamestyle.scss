@@ -101,6 +101,16 @@
     &.cell-selected {
         background-color: #bbdefb;
     }
+
+    &.cell-mistake {
+        .cell-value {
+            color: #FB3D3F;
+        }
+    }
+
+    &.cell-conflict {
+        background-color: #f7cfd6;
+    }
 }
 
 .cell-value {
