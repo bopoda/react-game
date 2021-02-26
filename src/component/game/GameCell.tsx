@@ -4,7 +4,7 @@ import {CellConfigInterface} from "./types";
 interface Props {
     cellConfig: CellConfigInterface|null
     selected: boolean
-    setSelectedCell: any
+    setSelectedCell: (cellConfig: CellConfigInterface) => void
 }
 
 function GameCell(props: Props) {

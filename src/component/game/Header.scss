@@ -1,0 +1,80 @@
+.site-header {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    height: auto;
+    padding: 15px 0 10px;
+    border-bottom: 1px solid rgba(0, 63, 123, .1);
+    background: #fff;
+    z-index: 100;
+
+    @media screen and (min-width: 980px) {
+        height: 70px;
+        padding: 18px 0 17px;
+    }
+
+    .logo {
+        font-size: 30px;
+    }
+}
+
+.clearfix:after,
+.clearfix:before {
+    display: table;
+    content: " ";
+    clear: both;
+}
+
+//move to separate file?
+.content-wrapper {
+    flex: 1 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 1070px;
+    margin: 0 auto;
+    padding: 0 10px;
+}
+
+//separate file
+.site-content-wrapper {
+    display: flex;
+    padding-top: 10px;
+}
+
+//separate
+.site-content {
+    position: relative;
+    width: 100%;
+}
+
+.logo-sudoku {
+    display: block;
+    position: relative;
+    height: 32px;
+    background: url("../../images/logo.png") no-repeat;
+    background-size: contain;
+}
+
+
+.site-footer {
+    flex: 0 0 auto;
+    padding: 40px 0 15px;
+    background: #bbbfc4;
+
+    .rs-logo img {
+        max-width: 100px;
+    }
+
+    .flex-wrapper {
+        display: block;
+        text-align: center;
+
+        @media screen and (min-width: 980px) {
+            display: flex;
+            text-align: left;
+        }
+    }
+
+    .footer-item {
+        flex: 1;
+    }
+}

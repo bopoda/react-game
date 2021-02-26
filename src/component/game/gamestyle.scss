@@ -66,6 +66,12 @@
             pointer-events: none;
         }
     }
+
+    &.show-mistakes .cell-mistake {
+        .cell-value {
+            color: #FB3D3F;
+        }
+    }
 }
 
 .game-row {
@@ -100,12 +106,6 @@
 
     &.cell-selected {
         background-color: #bbdefb;
-    }
-
-    &.cell-mistake {
-        .cell-value {
-            color: #FB3D3F;
-        }
     }
 
     &.cell-conflict {

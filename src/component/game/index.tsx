@@ -2,6 +2,8 @@ import React, {useEffect, useState} from "react";
 import GameCell from "./GameCell";
 import "./gamestyle.scss";
 import {CellConfigInterface, CellValueType, CellSolutionType} from "./types";
+import Header from "./Header";
+import Footer from "./Footer";
 
 const FIELD_SIZE = 9;
 const GAME_MISSION = "970000600201509034830040010000402000706050002052038000500817006620394051000060403";
@@ -10,6 +12,7 @@ const GAME_SOLUTION = "974123685261589734835746219319472568786951342452638197543
 function Game() {
     const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>([]);
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
+    const [showMistakes, setShowMistakes] = useState<boolean>(false);
 
     function range(start: number, end: number): number[] {
         const result = [];
@@ -124,18 +127,41 @@ function Game() {
 
     return (
         <div>
-            <div className="game-wrapper">
-                <div className="game">
-                    <table className="game-table">
-                        <tbody>
-                        {range(0, FIELD_SIZE - 1).map(rowNumber => {
-                            return renderGameRow(rowNumber);
-                        })}
-                        </tbody>
-                    </table>
+            <Header/>
+            <div className="content-wrapper site-content-wrapper clearfix__">
+                <div className="site-content">
+                    <div className="sudoku-wrapper">
+                        <div className="game-info-wrapper flex-wrapper">
+                            <div className="check-mistakes-wrapper">
+                                <label className="check-mistakes">
+                                    <span className="label-text">Show Mistakes</span>
+                                    <span className="switch">
+                                        <input type="checkbox"
+                                               checked={showMistakes}
+                                               onChange={() => setShowMistakes(!showMistakes)}
+                                        />
+                                    </span>
+                                </label>
+                            </div>
+                            {/*<div className="timer-wrapper"><span className="timer">25:41</span>*/}
+                            {/*</div>*/}
+                        </div>
+                        <div className="game-wrapper">
+                            <div className="game">
+                                <table className={"game-table" + (showMistakes ? " show-mistakes" : "")}>
+                                    <tbody>
+                                    {range(0, FIELD_SIZE - 1).map(rowNumber => {
+                                        return renderGameRow(rowNumber);
+                                    })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <input type="button" value="Solve all automatically" onClick={solveAllCells} />
             </div>
-            <input type="submit" value="Solve all automatically" onClick={solveAllCells} />
+            <Footer/>
         </div>
     )
 }
