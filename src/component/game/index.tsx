@@ -146,20 +146,38 @@ function Game() {
                             {/*<div className="timer-wrapper"><span className="timer">25:41</span>*/}
                             {/*</div>*/}
                         </div>
-                        <div className="game-wrapper">
-                            <div className="game">
-                                <table className={"game-table" + (showMistakes ? " show-mistakes" : "")}>
-                                    <tbody>
-                                    {range(0, FIELD_SIZE - 1).map(rowNumber => {
-                                        return renderGameRow(rowNumber);
-                                    })}
-                                    </tbody>
-                                </table>
+                        <div className="game-flex-wrapper">
+                            <div className="game-wrapper">
+                                <div className="game">
+                                    <table className={"game-table" + (showMistakes ? " show-mistakes" : "")}>
+                                        <tbody>
+                                        {range(0, FIELD_SIZE - 1).map(rowNumber => {
+                                            return renderGameRow(rowNumber);
+                                        })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div className="game-controls-wrapper">
+                                <nav>
+                                    <div className="new-game-button-wrapper">
+                                        <div className="button new-game-button">New Game</div>
+                                        <div className="new-game-menu">
+                                            <div className="tooltip-arrow"> </div>
+                                            <ul className="select-difficulty">
+                                                <li className="lost-progress-label">Current game progress will be lost</li>
+                                                <li><a className="new-game-menu-new">New Game</a></li>
+                                                <li><a className="new-game-menu-restart">Restart</a></li>
+                                                <li><a className="new-game-menu-cancel">Cancel</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <input type="button" value="Solve all automatically" onClick={solveAllCells} />
+                                </nav>
                             </div>
                         </div>
                     </div>
                 </div>
-                <input type="button" value="Solve all automatically" onClick={solveAllCells} />
             </div>
             <Footer/>
         </div>
