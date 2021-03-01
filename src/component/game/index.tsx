@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {SyntheticEvent, useEffect, useState} from "react";
 import GameCell from "./GameCell";
 import "./gamestyle.scss";
 import {CellConfigInterface, CellValueType, CellSolutionType} from "./types";
@@ -153,8 +153,20 @@ function Game() {
         setCells(newCells);
     }
 
-    function newGameClick() {
+    function newGameClick(): void {
         setShowNewGameMenu(!showNewGameMenu);
+    }
+
+    function onCancel(e: SyntheticEvent): void {
+        e.preventDefault();
+    }
+
+    function onRestart(e: SyntheticEvent): void {
+        e.preventDefault();
+
+        localStorage.removeItem('CELLS');
+
+        window.document.location.reload();
     }
 
     return (
@@ -201,9 +213,18 @@ function Game() {
                                                 <li className="lost-progress-label">
                                                     Current game progress will be lost
                                                 </li>
-                                                <li><a href="/#" className="new-game-menu-new">New Game</a></li>
-                                                <li><a href="/#" className="new-game-menu-restart">Restart</a></li>
-                                                <li><a href="/#" className="new-game-menu-cancel">Cancel</a></li>
+                                                <li><a href="/#"
+                                                       className="new-game-menu-new"
+                                                       onClick={onRestart}
+                                                >New Game</a></li>
+                                                <li><a href="/#"
+                                                       className="new-game-menu-restart"
+                                                       onClick={onRestart}
+                                                >Restart</a></li>
+                                                <li><a href="/#"
+                                                       className="new-game-menu-cancel"
+                                                       onClick={onCancel}
+                                                >Cancel</a></li>
                                             </ul>
                                         </div>
                                         }
