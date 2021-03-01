@@ -13,6 +13,7 @@ function Game() {
     const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>([]);
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
     const [showMistakes, setShowMistakes] = useState<boolean>(false);
+    const [showNewGameMenu, setShowNewGameMenu] = useState<boolean>(false);
 
     function range(start: number, end: number): number[] {
         const result = [];
@@ -36,6 +37,13 @@ function Game() {
         }
         // eslint-disable-next-line
     }, [selectedCell]);
+
+    useEffect(() => {
+        document.addEventListener('click', onDocumentClick);
+        return () => {
+            document.removeEventListener('click', onDocumentClick);
+        }
+    }, []);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -67,6 +75,17 @@ function Game() {
         }
 
         setCells(cellsTemp);
+    }
+
+    function onDocumentClick(e: MouseEvent): void {
+        if (!e.target) {
+            return;
+        }
+
+        const el = e.target as Element;
+        if (!el.classList.contains('new-game-button')) {
+            setShowNewGameMenu(false);
+        }
     }
 
     function onKeydown(e: KeyboardEvent): void {
@@ -125,6 +144,10 @@ function Game() {
         setCells(newCells);
     }
 
+    function newGameClick() {
+        setShowNewGameMenu(!showNewGameMenu);
+    }
+
     return (
         <div>
             <Header/>
@@ -161,16 +184,20 @@ function Game() {
                             <div className="game-controls-wrapper">
                                 <nav>
                                     <div className="new-game-button-wrapper">
-                                        <div className="button new-game-button">New Game</div>
+                                        <div className="button new-game-button" onClick={newGameClick}>New Game</div>
+                                        {showNewGameMenu &&
                                         <div className="new-game-menu">
                                             <div className="tooltip-arrow"> </div>
                                             <ul className="select-difficulty">
-                                                <li className="lost-progress-label">Current game progress will be lost</li>
-                                                <li><a className="new-game-menu-new">New Game</a></li>
-                                                <li><a className="new-game-menu-restart">Restart</a></li>
-                                                <li><a className="new-game-menu-cancel">Cancel</a></li>
+                                                <li className="lost-progress-label">
+                                                    Current game progress will be lost
+                                                </li>
+                                                <li><a href="/#" className="new-game-menu-new">New Game</a></li>
+                                                <li><a href="/#" className="new-game-menu-restart">Restart</a></li>
+                                                <li><a href="/#" className="new-game-menu-cancel">Cancel</a></li>
                                             </ul>
                                         </div>
+                                        }
                                     </div>
                                     <input type="button" value="Solve all automatically" onClick={solveAllCells} />
                                 </nav>
