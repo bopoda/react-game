@@ -56,25 +56,33 @@ function Game() {
     }, []);
 
     function startGame(): void {
-        console.log('Start game....');
-        const cellsTemp = new Array<Array<CellConfigInterface>>();
-        let index = 0;
-        for (let row = 0; row <= FIELD_SIZE - 1; row++) {
-            cellsTemp[row] = new Array<CellConfigInterface>();
-            for (let column = 0; column <= FIELD_SIZE - 1; column++) {
-                cellsTemp[row][column] = {
-                    value: parseInt(GAME_MISSION[index]) as CellValueType,
-                    solution: parseInt(GAME_SOLUTION[index]) as CellSolutionType,
-                    prefilled: GAME_MISSION[index] === GAME_SOLUTION[index],
-                    row: row,
-                    col: column
+        const cellsString = localStorage.getItem('CELLS');
+        if (cellsString) {
+            console.log('Start saved game...');
+            const savedCells = JSON.parse(cellsString) as CellConfigInterface[][];
+
+            setCells(savedCells);
+        } else {
+            console.log('Start new game...');
+            const cellsTemp = new Array<Array<CellConfigInterface>>();
+            let index = 0;
+            for (let row = 0; row <= FIELD_SIZE - 1; row++) {
+                cellsTemp[row] = new Array<CellConfigInterface>();
+                for (let column = 0; column <= FIELD_SIZE - 1; column++) {
+                    cellsTemp[row][column] = {
+                        value: parseInt(GAME_MISSION[index]) as CellValueType,
+                        solution: parseInt(GAME_SOLUTION[index]) as CellSolutionType,
+                        prefilled: GAME_MISSION[index] === GAME_SOLUTION[index],
+                        row: row,
+                        col: column
+                    }
+
+                    index++;
                 }
-
-                index++;
             }
-        }
 
-        setCells(cellsTemp);
+            setCells(cellsTemp);
+        }
     }
 
     function onDocumentClick(e: MouseEvent): void {
@@ -110,6 +118,7 @@ function Game() {
             const newCells = JSON.parse(JSON.stringify(cells));
             newCells[selectedCell.row][selectedCell.col].value = newValue;
             setCells(newCells);
+            localStorage.setItem("CELLS", JSON.stringify(newCells));
         }
     }
 
