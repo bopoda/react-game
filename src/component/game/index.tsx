@@ -9,7 +9,9 @@ import getRandomLevel from "../api/levelApi";
 const FIELD_SIZE = 9;
 
 function Game() {
-    const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>([]);
+
+    const savedCells = JSON.parse(localStorage.getItem('CELLS') as string);
+    const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>(savedCells);
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
     const [showMistakes, setShowMistakes] = useState<boolean>(false);
     const [showNewGameMenu, setShowNewGameMenu] = useState<boolean>(false);
@@ -45,45 +47,42 @@ function Game() {
     }, []);
 
     useEffect(() => {
+        if (cells) {
+            return;
+        }
+
         const timer = setTimeout(() => {
-            startGame();
+            startNewGame();
         }, 500);
 
         return () => {
             clearTimeout(timer);
         }
+        // eslint-disable-next-line
     }, []);
 
-    function startGame(): void {
-        const cellsString = localStorage.getItem('CELLS');
-        if (cellsString) {
-            console.log('Start saved game...');
-            const savedCells = JSON.parse(cellsString) as CellConfigInterface[][];
+    function startNewGame(): void {
+        const levelApiResponse = getRandomLevel();
+        console.log('Start new game...', levelApiResponse);
 
-            setCells(savedCells);
-        } else {
-            const levelApiResponse = getRandomLevel();
-            console.log('Start new game...', levelApiResponse);
-
-            const cellsTemp = new Array<Array<CellConfigInterface>>();
-            let index = 0;
-            for (let row = 0; row <= FIELD_SIZE - 1; row++) {
-                cellsTemp[row] = new Array<CellConfigInterface>();
-                for (let column = 0; column <= FIELD_SIZE - 1; column++) {
-                    cellsTemp[row][column] = {
-                        value: parseInt(levelApiResponse.mission[index]) as CellValueType,
-                        solution: parseInt(levelApiResponse.solution[index]) as CellSolutionType,
-                        prefilled: levelApiResponse.mission[index] === levelApiResponse.solution[index],
-                        row: row,
-                        col: column
-                    }
-
-                    index++;
+        const cellsTemp = new Array<Array<CellConfigInterface>>();
+        let index = 0;
+        for (let row = 0; row <= FIELD_SIZE - 1; row++) {
+            cellsTemp[row] = new Array<CellConfigInterface>();
+            for (let column = 0; column <= FIELD_SIZE - 1; column++) {
+                cellsTemp[row][column] = {
+                    value: parseInt(levelApiResponse.mission[index]) as CellValueType,
+                    solution: parseInt(levelApiResponse.solution[index]) as CellSolutionType,
+                    prefilled: levelApiResponse.mission[index] === levelApiResponse.solution[index],
+                    row: row,
+                    col: column
                 }
-            }
 
-            setCells(cellsTemp);
+                index++;
+            }
         }
+
+        setCells(cellsTemp);
     }
 
     function onDocumentClick(e: MouseEvent): void {
@@ -123,15 +122,11 @@ function Game() {
         }
     }
 
-    //TODO: finish if enough time
-    function highlightConflicts() {
-    }
-
     function renderGameRow(rowNumber: number): React.ReactNode {
         return (
             <tr className="game-row" key={rowNumber}>
                 {range(0, FIELD_SIZE - 1).map(columnNumber => {
-                    const cellConfig = cells.length ? cells[rowNumber][columnNumber] : null;
+                    const cellConfig = cells ? cells[rowNumber][columnNumber] : null;
                     return <GameCell cellConfig={cellConfig}
                                      key={rowNumber.toString() + columnNumber.toString()}
                                      selected={cellConfig ? isSelectedCell(cellConfig) : false}
@@ -218,10 +213,6 @@ function Game() {
                                                        className="new-game-menu-new"
                                                        onClick={onRestart}
                                                 >New Game</a></li>
-                                                <li><a href="/#"
-                                                       className="new-game-menu-restart"
-                                                       onClick={onRestart}
-                                                >Restart</a></li>
                                                 <li><a href="/#"
                                                        className="new-game-menu-cancel"
                                                        onClick={onCancel}
