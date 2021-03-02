@@ -4,6 +4,7 @@ import {CellConfigInterface, CellSolutionType, CellValueType} from "./types";
 import getRandomLevel from "../api/levelApi";
 import GameCell from "./GameCell";
 import "./gamestyle.scss";
+import NavHotkeys from "../nav/NavHotkeys";
 
 const FIELD_SIZE = 9;
 
@@ -83,22 +84,39 @@ function Game() {
             return;
         }
 
-        if (!e.code.match(/^Digit/)) {
+        switch (e.key) {
+            case '1':
+            case '2':
+            case '3':
+            case '4':
+            case '5':
+            case '6':
+            case '7':
+            case '8':
+            case '9':
+                changeCurrentCellValue(parseInt(e.key) as CellValueType);
+                break;
+
+            case '0':
+            case 'Backspace':
+                changeCurrentCellValue(0 as CellValueType);
+                break;
+
+            default:
+                //do nothing
+                break;
+        }
+    }
+
+    function changeCurrentCellValue(newValue: CellValueType): void {
+        if (!selectedCell || selectedCell.prefilled) {
             return;
         }
 
-        const newValue = parseInt(e.key) as CellValueType;
-
-        changeCellValue(newValue);
-    }
-
-    function changeCellValue(newValue: CellValueType): void {
-        if (selectedCell && selectedCell.value !== newValue && !selectedCell.prefilled) {
-            const newCells = JSON.parse(JSON.stringify(cells));
-            newCells[selectedCell.row][selectedCell.col].value = newValue;
-            setCells(newCells);
-            localStorage.setItem("CELLS", JSON.stringify(newCells));
-        }
+        const newCells = JSON.parse(JSON.stringify(cells));
+        newCells[selectedCell.row][selectedCell.col].value = newValue;
+        setCells(newCells);
+        localStorage.setItem("CELLS", JSON.stringify(newCells));
     }
 
     function solveAllCells() {
@@ -157,6 +175,7 @@ function Game() {
                     <nav>
                         <NavNewGame/>
                         <input type="button" value="Solve all automatically" onClick={solveAllCells} />
+                        <NavHotkeys/>
                     </nav>
                 </div>
             </div>

@@ -28,7 +28,7 @@ function GameCell(props: Props) {
 
 
         if (cellConfig && cellConfig.value > 0
-        && cellConfig.value !== cellConfig.solution) {
+            && cellConfig.value !== cellConfig.solution) {
             className.push("cell-mistake");
         }
 
@@ -40,7 +40,7 @@ function GameCell(props: Props) {
             onClick={onClick}
         >
             <div className={"cell-value" + (cellConfig?.prefilled ? " cell-prefilled" : "")}>
-                {cellConfig && cellConfig.value > 0 ? cellConfig.value : ''}
+                {cellConfig?.value ? cellConfig.value : ''}
             </div>
         </td>
     )
