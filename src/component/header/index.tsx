@@ -4,7 +4,7 @@ import "./Header.scss";
 function Header() {
    return (
        <header className="site-header">
-           <div className="content-wrapper clearfix__">
+           <div className="content-wrapper">
                <a href="/" className="logo-sudoku">{' '}</a>
            </div>
        </header>

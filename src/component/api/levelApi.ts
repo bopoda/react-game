@@ -1,4 +1,3 @@
-import "../game/Header.scss";
 import {LevelApiResponse} from "../game/types";
 
 function getRandomLevel(): LevelApiResponse {

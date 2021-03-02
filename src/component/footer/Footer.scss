@@ -1,0 +1,24 @@
+.site-footer {
+    flex: 0 0 auto;
+    padding: 35px 0 15px;
+    background: #bbbfc4;
+    margin-top: 24px;
+
+    .rs-logo img {
+        max-width: 100px;
+    }
+
+    .flex-wrapper {
+        display: block;
+        text-align: center;
+
+        @media screen and (min-width: 980px) {
+            display: flex;
+            text-align: left;
+        }
+    }
+
+    .footer-item {
+        flex: 1;
+    }
+}

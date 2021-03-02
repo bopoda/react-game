@@ -132,3 +132,140 @@
         font-weight: 300;
     }
 }
+
+/*******************************/
+/**      NEW GAME BUTTON      **/
+/*******************************/
+
+.new-game-button-wrapper-header {
+    display: none;
+}
+
+.new-game-button-wrapper {
+    position: relative;
+}
+
+.new-game-button {
+    height: 60px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    background-color: #4a90e2;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 60px;
+    vertical-align: middle;
+    text-align: center;
+    color: #fff;
+    transition: all .2s ease-in-out;
+
+    &:hover {
+        background-color: #69a7f0;
+    }
+
+    &:active {
+        background-color: #3277c7;
+    }
+}
+
+
+/*******************************/
+/***      NEW GAME MENU       **/
+/*******************************/
+
+.new-game-menu {
+    display: block;
+    position: absolute;
+    top: calc(100% - 5px);
+    left: 50%;
+    width: 200px;
+    margin: 0;
+    padding: 0;
+    border-radius: 8px;
+    transform: translateX(-50%);
+    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.2);
+    text-align: center;
+    background-color: #fff;
+    color: #000;
+    z-index: 51;
+
+    .tooltip-arrow {
+        position: absolute;
+        bottom: 100%;
+        left: 50%;
+        width: 50px;
+        height: 25px;
+        transform: translateX(-50%);
+        overflow: hidden;
+
+        &:after {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: #fff;
+            transform: translateX(-50%) translateY(50%) rotate(45deg);
+            box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.2);
+            border-top-left-radius: 8px;
+        }
+    }
+
+    ul {
+        padding: 13px 0;
+        margin: 0;
+        list-style: none;
+    }
+
+    a {
+        display: block;
+        padding: 11px 0;
+        font-size: 16px;
+        line-height: 1;
+        font-weight: 600;
+        color: #4a90e2;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all .2s ease-in-out;
+
+        &:hover {
+            background-color: #f3f6fa;
+        }
+
+        &.new-game-menu-cancel {
+            color: #e55c6c;
+        }
+    }
+}
+
+.lost-progress-label {
+    padding: 10px 15px;
+    font-size: 15px;
+    line-height: 1.33;
+    color: #6e7c8c;
+}
+
+.game-flex-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+}
+
+.game-controls-wrapper {
+    min-width: 200px;
+    max-width: 360px;
+    width: 50%;
+    margin-left: 20px;
+    user-select: none;
+
+    transition: opacity .3s ease-in-out;
+
+    nav {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        height: 100%;
+        width: 100%;
+    }
+}

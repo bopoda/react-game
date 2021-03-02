@@ -1,6 +1,6 @@
 import React from "react";
-import "./Header.scss";
 import rsSchoolLogo from "../../images/rs_school_js.svg";
+import "./Footer.scss";
 
 function Footer() {
     return (

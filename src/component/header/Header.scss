@@ -1,0 +1,22 @@
+.site-header {
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    height: auto;
+    padding: 15px 0 10px;
+    border-bottom: 1px solid rgba(0, 63, 123, .1);
+    background: #fff;
+    z-index: 100;
+
+    @media screen and (min-width: 980px) {
+        height: 70px;
+        padding: 18px 0 17px;
+    }
+
+    .logo-sudoku {
+        display: block;
+        position: relative;
+        height: 32px;
+        background: url("../../images/logo.png") no-repeat;
+        background-size: contain;
+    }
+}
