@@ -10,9 +10,11 @@ const FIELD_SIZE = 9;
 
 function Game() {
     const savedCells = JSON.parse(localStorage.getItem('CELLS') as string);
+    const savedShowMistakes = localStorage.getItem('SHOW_MISTAKES') === "1";
+
     const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>(savedCells);
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
-    const [showMistakes, setShowMistakes] = useState<boolean>(false);
+    const [showMistakes, setShowMistakes] = useState<boolean>(savedShowMistakes);
 
     function range(start: number, end: number): number[] {
         const result = [];
@@ -131,6 +133,11 @@ function Game() {
         setCells(newCells);
     }
 
+    function handleShowMistakesClick() {
+        localStorage.setItem('SHOW_MISTAKES', showMistakes ? "0" : "1");
+        setShowMistakes(!showMistakes);
+    }
+
     return (
         <div className="sudoku-wrapper">
             <div className="game-info-wrapper flex-wrapper">
@@ -140,7 +147,7 @@ function Game() {
                         <span className="switch">
                                     <input type="checkbox"
                                            checked={showMistakes}
-                                           onChange={() => setShowMistakes(!showMistakes)}
+                                           onChange={handleShowMistakesClick}
                                     />
                                 </span>
                     </label>
