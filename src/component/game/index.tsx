@@ -4,10 +4,9 @@ import "./gamestyle.scss";
 import {CellConfigInterface, CellValueType, CellSolutionType} from "./types";
 import Header from "./Header";
 import Footer from "./Footer";
+import getRandomLevel from "../api/levelApi";
 
 const FIELD_SIZE = 9;
-const GAME_MISSION = "970000600201509034830040010000402000706050002052038000500817006620394051000060403";
-const GAME_SOLUTION = "974123685261589734835746219319472568786951342452638197543817926627394851198265473";
 
 function Game() {
     const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>([]);
@@ -48,7 +47,7 @@ function Game() {
     useEffect(() => {
         const timer = setTimeout(() => {
             startGame();
-        }, 1000);
+        }, 500);
 
         return () => {
             clearTimeout(timer);
@@ -63,16 +62,18 @@ function Game() {
 
             setCells(savedCells);
         } else {
-            console.log('Start new game...');
+            const levelApiResponse = getRandomLevel();
+            console.log('Start new game...', levelApiResponse);
+
             const cellsTemp = new Array<Array<CellConfigInterface>>();
             let index = 0;
             for (let row = 0; row <= FIELD_SIZE - 1; row++) {
                 cellsTemp[row] = new Array<CellConfigInterface>();
                 for (let column = 0; column <= FIELD_SIZE - 1; column++) {
                     cellsTemp[row][column] = {
-                        value: parseInt(GAME_MISSION[index]) as CellValueType,
-                        solution: parseInt(GAME_SOLUTION[index]) as CellSolutionType,
-                        prefilled: GAME_MISSION[index] === GAME_SOLUTION[index],
+                        value: parseInt(levelApiResponse.mission[index]) as CellValueType,
+                        solution: parseInt(levelApiResponse.solution[index]) as CellSolutionType,
+                        prefilled: levelApiResponse.mission[index] === levelApiResponse.solution[index],
                         row: row,
                         col: column
                     }

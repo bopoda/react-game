@@ -6,6 +6,11 @@ export interface CellConfigInterface {
     col: number
 }
 
+export interface LevelApiResponse {
+    mission: string
+    solution: string
+}
+
 export type CellSolutionType = 1 | 2 | 3 |4 | 5 | 6| 7 | 8 | 9
 
 export type CellValueType = 0 | CellSolutionType
