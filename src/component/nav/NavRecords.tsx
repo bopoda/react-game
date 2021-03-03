@@ -11,9 +11,9 @@ function NavRecords(props: Props) {
             <p>Last 10 Records:</p>
             {props.records.length ?
             <ul>
-                {props.records.map(function (seconds: number) {
+                {props.records.map(function (seconds: number, i: number) {
                     return (
-                        <li>
+                        <li key={i}>
                             {getHumanReadableTimerTime(seconds)}
                         </li>
                     );

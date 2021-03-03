@@ -12,19 +12,12 @@ const FIELD_SIZE = 9;
 const MAX_COUNT_RECORDS = 10;
 
 function Game() {
-    const savedCells = JSON.parse(localStorage.getItem('CELLS') as string);
-    const savedShowMistakes = localStorage.getItem('SHOW_MISTAKES') === "1";
-    const savedSecondsSpent = localStorage.getItem('SECONDS_SPENT') as string;
-    console.log('READ STORAGE look timer!');
-
     const [records, setRecords] = useState<number[]>([]);
     const [finished, setFinished] = useState<boolean>(false);
-    const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>(savedCells);
+    const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>([]);
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
-    const [showMistakes, setShowMistakes] = useState<boolean>(savedShowMistakes);
-    const [secondsSpent, setSecondsSpent] = useState<number>(
-        savedSecondsSpent !== null ? parseInt(savedSecondsSpent) : 0
-    );
+    const [showMistakes, setShowMistakes] = useState<boolean>(false);
+    const [secondsSpent, setSecondsSpent] = useState<number>(0);
 
     useEffect(() => {
         document.addEventListener('keydown', onKeydown);
@@ -35,12 +28,24 @@ function Game() {
     }, [selectedCell]);
 
     useEffect(() => {
-        const savedRecords = (localStorage.getItem('RECORDS') as string);
+        const savedRecords = localStorage.getItem('RECORDS') as string;
         if (savedRecords) {
             setRecords(JSON.parse(savedRecords));
         }
 
-        if (cells) {
+        const savedSecondsSpent = localStorage.getItem('SECONDS_SPENT') as string;
+        if (savedSecondsSpent) {
+            setSecondsSpent(parseInt(savedSecondsSpent));
+        }
+
+        const savedCells = JSON.parse(localStorage.getItem('CELLS') as string);
+        if (savedCells) {
+            setCells(savedCells);
+        }
+        const savedShowMistakes = localStorage.getItem('SHOW_MISTAKES') === "1";
+        setShowMistakes(savedShowMistakes);
+
+        if (savedCells) {
             return;
         }
 
@@ -56,6 +61,9 @@ function Game() {
 
     useEffect(() => {
         localStorage.setItem('RECORDS', JSON.stringify(records));
+        localStorage.setItem('SHOW_MISTAKES', showMistakes ? "0" : "1");
+        localStorage.setItem('SECONDS_SPENT', secondsSpent.toString());
+        localStorage.setItem("CELLS", JSON.stringify(cells));
     });
 
     function range(start: number, end: number): number[] {
@@ -95,7 +103,6 @@ function Game() {
         }
 
         setCells(cellsTemp);
-        localStorage.setItem("CELLS", JSON.stringify(cellsTemp));
     }
 
     function onKeydown(e: KeyboardEvent): void {
@@ -142,7 +149,7 @@ function Game() {
         const newCells = JSON.parse(JSON.stringify(cells));
         newCells[selectedCell.row][selectedCell.col].value = newValue;
         setCells(newCells);
-        localStorage.setItem("CELLS", JSON.stringify(newCells));
+
         if (isAllCellsDone(newCells)) {
             onGameFinished();
         }
@@ -193,13 +200,11 @@ function Game() {
     }
 
     function handleShowMistakesClick() {
-        localStorage.setItem('SHOW_MISTAKES', showMistakes ? "0" : "1");
         setShowMistakes(!showMistakes);
     }
 
     function setTimerSecondsSpent(secondsSpent: number) {
         setSecondsSpent(secondsSpent);
-        localStorage.setItem('SECONDS_SPENT', secondsSpent.toString());
     }
 
     function fullScreen(): void {
@@ -246,7 +251,7 @@ function Game() {
                                 return (
                                     <tr className="game-row" key={rowNumber}>
                                         {range(0, FIELD_SIZE - 1).map(columnNumber => {
-                                            const cellConfig = cells ? cells[rowNumber][columnNumber] : null;
+                                            const cellConfig = cells.length ? cells[rowNumber][columnNumber] : null;
                                             return <GameCell cellConfig={cellConfig}
                                                              key={rowNumber.toString() + columnNumber.toString()}
                                                              selected={cellConfig ? isSelectedCell(cellConfig) : false}
