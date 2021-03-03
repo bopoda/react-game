@@ -61,7 +61,7 @@ function Game() {
 
     useEffect(() => {
         localStorage.setItem('RECORDS', JSON.stringify(records));
-        localStorage.setItem('SHOW_MISTAKES', showMistakes ? "0" : "1");
+        localStorage.setItem('SHOW_MISTAKES', showMistakes ? "1" : "0");
         localStorage.setItem('SECONDS_SPENT', secondsSpent.toString());
         localStorage.setItem("CELLS", JSON.stringify(cells));
     });
