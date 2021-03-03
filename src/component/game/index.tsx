@@ -5,31 +5,23 @@ import getRandomLevel from "../api/levelApi";
 import GameCell from "./GameCell";
 import "./gamestyle.scss";
 import NavHotkeys from "../nav/NavHotkeys";
+import Timer from "./Timer";
 
 const FIELD_SIZE = 9;
 
 function Game() {
     const savedCells = JSON.parse(localStorage.getItem('CELLS') as string);
     const savedShowMistakes = localStorage.getItem('SHOW_MISTAKES') === "1";
+    const savedSecondsSpent = localStorage.getItem('SECONDS_SPENT') as string;
+    console.log('READ STORAGE look timer!');
 
     const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>(savedCells);
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
     const [showMistakes, setShowMistakes] = useState<boolean>(savedShowMistakes);
+    const [secondsSpent, setSecondsSpent] = useState<number>(
+        savedSecondsSpent !== null ? parseInt(savedSecondsSpent) : 0
+    );
 
-    function range(start: number, end: number): number[] {
-        const result = [];
-        for (let i = start; i <= end; i++) {
-            result.push(i);
-        }
-
-        return result;
-    }
-
-    function isSelectedCell(cellConfig: CellConfigInterface): boolean {
-        return selectedCell !== undefined
-            && selectedCell.row === cellConfig.row
-            && selectedCell.col === cellConfig.col;
-    }
 
     useEffect(() => {
         document.addEventListener('keydown', onKeydown);
@@ -54,6 +46,21 @@ function Game() {
         // eslint-disable-next-line
     }, []);
 
+    function range(start: number, end: number): number[] {
+        const result = [];
+        for (let i = start; i <= end; i++) {
+            result.push(i);
+        }
+
+        return result;
+    }
+
+    function isSelectedCell(cellConfig: CellConfigInterface): boolean {
+        return selectedCell !== undefined
+            && selectedCell.row === cellConfig.row
+            && selectedCell.col === cellConfig.col;
+    }
+
     function startNewGame(): void {
         const levelApiResponse = getRandomLevel();
         console.log('Start new game...', levelApiResponse);
@@ -76,6 +83,7 @@ function Game() {
         }
 
         setCells(cellsTemp);
+        localStorage.setItem("CELLS", JSON.stringify(cellsTemp));
     }
 
     function onKeydown(e: KeyboardEvent): void {
@@ -138,6 +146,11 @@ function Game() {
         setShowMistakes(!showMistakes);
     }
 
+    function setTimerSecondsSpent(secondsSpent: number) {
+        setSecondsSpent(secondsSpent);
+        localStorage.setItem('SECONDS_SPENT', secondsSpent.toString());
+    }
+
     return (
         <div className="sudoku-wrapper">
             <div className="game-info-wrapper flex-wrapper">
@@ -152,8 +165,11 @@ function Game() {
                                 </span>
                     </label>
                 </div>
-                {/*<div className="timer-wrapper"><span className="timer">25:41</span>*/}
-                {/*</div>*/}
+                <div className="timer-wrapper">
+                    <Timer secondsSpent={secondsSpent}
+                           setSecondsSpent={setTimerSecondsSpent}
+                    />
+                </div>
             </div>
             <div className="game-flex-wrapper">
                 <div className="game-wrapper">

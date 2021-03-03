@@ -22,6 +22,7 @@ function NavNewGame() {
         e.preventDefault();
 
         localStorage.removeItem('CELLS');
+        localStorage.removeItem('SECONDS_SPENT');
 
         window.document.location.reload();
     }
