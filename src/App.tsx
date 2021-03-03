@@ -7,7 +7,7 @@ function App() {
     return (
         <>
             <Header/>
-            <div className="content-wrapper site-content-wrapper">
+            <div className="content-wrapper site-content-wrapper" id="site-content-wrapper">
                 <div className="site-content">
                     <Game/>
                 </div>

@@ -22,7 +22,6 @@ function Game() {
         savedSecondsSpent !== null ? parseInt(savedSecondsSpent) : 0
     );
 
-
     useEffect(() => {
         document.addEventListener('keydown', onKeydown);
         return () => {
@@ -151,6 +150,14 @@ function Game() {
         localStorage.setItem('SECONDS_SPENT', secondsSpent.toString());
     }
 
+    function fullScreen(): void {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
     return (
         <div className="sudoku-wrapper">
             <div className="game-info-wrapper flex-wrapper">
@@ -168,6 +175,12 @@ function Game() {
                 <div className="timer-wrapper">
                     <Timer secondsSpent={secondsSpent}
                            setSecondsSpent={setTimerSecondsSpent}
+                    />
+                </div>
+                <div className="full-screen-wrapper">
+                    <input type="button"
+                           value={document.fullscreenElement ? "Minimize" : "Full Screen"}
+                           onClick={fullScreen}
                     />
                 </div>
             </div>

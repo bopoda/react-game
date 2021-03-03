@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 
 interface Props {
     secondsSpent: number
@@ -25,13 +25,13 @@ function Timer(props: Props) {
         return ("0" + secondsSpent % 60).slice(-2);
     }
 
-    // useEffect(() => {
-    //     const timer = setTimeout(() => {
-    //         console.log('timer +1');
-    //         props.setSecondsSpent(secondsSpent + 1);
-    //     }, 100);
-    //     return () => clearTimeout(timer);
-    // });
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            console.log('timer +1');
+            props.setSecondsSpent(secondsSpent + 1);
+        }, 1000);
+        return () => clearTimeout(timer);
+    });
 
     return (
         <span className="timer">
