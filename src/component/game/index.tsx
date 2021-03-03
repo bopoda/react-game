@@ -5,9 +5,11 @@ import getRandomLevel from "../api/levelApi";
 import GameCell from "./GameCell";
 import "./gamestyle.scss";
 import NavHotkeys from "../nav/NavHotkeys";
-import Timer from "./Timer";
+import Timer, {getHumanReadableTimerTime} from "./Timer";
+import NavRecords from "../nav/NavRecords";
 
 const FIELD_SIZE = 9;
+const MAX_COUNT_RECORDS = 10;
 
 function Game() {
     const savedCells = JSON.parse(localStorage.getItem('CELLS') as string);
@@ -15,6 +17,8 @@ function Game() {
     const savedSecondsSpent = localStorage.getItem('SECONDS_SPENT') as string;
     console.log('READ STORAGE look timer!');
 
+    const [records, setRecords] = useState<number[]>([]);
+    const [finished, setFinished] = useState<boolean>(false);
     const [cells, setCells] = useState<Array<Array<CellConfigInterface>>>(savedCells);
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
     const [showMistakes, setShowMistakes] = useState<boolean>(savedShowMistakes);
@@ -31,6 +35,11 @@ function Game() {
     }, [selectedCell]);
 
     useEffect(() => {
+        const savedRecords = (localStorage.getItem('RECORDS') as string);
+        if (savedRecords) {
+            setRecords(JSON.parse(savedRecords));
+        }
+
         if (cells) {
             return;
         }
@@ -44,6 +53,10 @@ function Game() {
         }
         // eslint-disable-next-line
     }, []);
+
+    useEffect(() => {
+        localStorage.setItem('RECORDS', JSON.stringify(records));
+    });
 
     function range(start: number, end: number): number[] {
         const result = [];
@@ -122,13 +135,43 @@ function Game() {
             return;
         }
 
+        if (finished) {
+            return;
+        }
+
         const newCells = JSON.parse(JSON.stringify(cells));
         newCells[selectedCell.row][selectedCell.col].value = newValue;
         setCells(newCells);
         localStorage.setItem("CELLS", JSON.stringify(newCells));
+        if (isAllCellsDone(newCells)) {
+            onGameFinished();
+        }
     }
 
-    function solveAllCells() {
+    function saveRecord(): void {
+        records.unshift(secondsSpent);
+
+        setRecords(records.slice(0, MAX_COUNT_RECORDS));
+    }
+
+    function isAllCellsDone(cells: Array<Array<CellConfigInterface>>): boolean {
+        for (const row of cells) {
+            for (const cell of row) {
+                if (cell.value !== cell.solution) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    function solveAllCells(): void {
+        if (finished) {
+            alert('The game is already solved');
+            return;
+        }
+
         const newCells = JSON.parse(JSON.stringify(cells));
 
         for (const row of newCells) {
@@ -138,6 +181,15 @@ function Game() {
         }
 
         setCells(newCells);
+        onGameFinished();
+    }
+
+    function onGameFinished(): void {
+        localStorage.removeItem('CELLS');
+        localStorage.removeItem('SECONDS_SPENT');
+        setFinished(true);
+        alert("Congrats! Your score is " + getHumanReadableTimerTime(secondsSpent) + ". You can start new game.");
+        saveRecord();
     }
 
     function handleShowMistakesClick() {
@@ -175,6 +227,7 @@ function Game() {
                 <div className="timer-wrapper">
                     <Timer secondsSpent={secondsSpent}
                            setSecondsSpent={setTimerSecondsSpent}
+                           finished={finished}
                     />
                 </div>
                 <div className="full-screen-wrapper">
@@ -212,6 +265,7 @@ function Game() {
                         <NavNewGame/>
                         <input type="button" value="Solve all automatically" onClick={solveAllCells} />
                         <NavHotkeys/>
+                        <NavRecords records={records}/>
                     </nav>
                 </div>
             </div>
