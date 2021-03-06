@@ -231,6 +231,7 @@ function Game() {
         }
 
         setCells(newCells);
+        setTimerSecondsSpent(0);
     }
 
     return (
