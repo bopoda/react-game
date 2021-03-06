@@ -46,6 +46,10 @@ function Game() {
         setShowMistakes(savedShowMistakes);
 
         if (savedCells) {
+            if (isAllCellsDone(savedCells)) {
+                setFinished(true);
+            }
+
             return;
         }
 
@@ -259,7 +263,7 @@ function Game() {
             <div className="game-flex-wrapper">
                 <div className="game-wrapper">
                     <div className="game">
-                        <table className={"game-table" + (showMistakes ? " show-mistakes" : "")}>
+                        <table className={"game-table" + (showMistakes ? " show-mistakes" : "") + (finished ? " game-finished" : "")}>
                             <tbody>
                             {range(0, FIELD_SIZE - 1).map(rowNumber => {
                                 return (
