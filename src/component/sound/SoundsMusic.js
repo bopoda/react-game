@@ -27,19 +27,11 @@ export default function SoundsMusic() {
     }
 
     useEffect(() => {
-        const dataMusicSoundSaved = JSON.parse(sessionStorage.getItem('dataMusicSound'));
-        if (dataMusicSoundSaved) {
-            setValueMusic(dataMusicSoundSaved.valueMusic);
-            setValueSound(dataMusicSoundSaved.valueSound);
-        }
-    }, []);
-
-    useEffect(() => {
         const valuesToSave = {
             valueMusic,
             valueSound,
         };
-        sessionStorage.setItem('dataMusicSound', JSON.stringify(valuesToSave));
+        localStorage.setItem('dataMusicSound', JSON.stringify(valuesToSave));
     })
 
     return (

@@ -7,10 +7,17 @@ import "./gamestyle.scss";
 import NavHotkeys from "../nav/NavHotkeys";
 import Timer, {getHumanReadableTimerTime} from "./Timer";
 import NavRecords from "../nav/NavRecords";
+import useSound from "use-sound";
+//@ts-ignore
+import soundClick from '../../sounds/click.mp3';
+//@ts-ignore
+import soundCorrect from '../../sounds/correct.mp3';
+//@ts-ignore
+import soundWrong from '../../sounds/wrong.mp3';
 
 const FIELD_SIZE = 9;
 const MAX_COUNT_RECORDS = 10;
-const SOLVE_AUTOMATICALLY_CELL_TIMEOUT = 700;
+const SOLVE_AUTOMATICALLY_CELL_MIN_TIMEOUT = 600;
 
 function Game() {
     const [records, setRecords] = useState<number[]>([]);
@@ -19,9 +26,23 @@ function Game() {
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
     const [showMistakes, setShowMistakes] = useState<boolean>(false);
     const [secondsSpent, setSecondsSpent] = useState<number>(0);
+    const [volume, setVolume] = useState<number>(0);
 
     const cellsRef = useRef(cells);
     cellsRef.current = cells;
+
+    const [playCellSelectedSound] = useSound(
+        soundClick,
+        { volume: volume }
+    );
+    const [playCorrectSound] = useSound(
+        soundCorrect,
+        { volume: volume }
+    );
+    const [playWrongSound] = useSound(
+        soundWrong,
+        { volume: volume }
+    );
 
     useEffect(() => {
         document.addEventListener('keydown', onKeydown);
@@ -59,7 +80,7 @@ function Game() {
 
         const timer = setTimeout(() => {
             startNewGame();
-        }, 500);
+        }, 700);
 
         return () => {
             clearTimeout(timer);
@@ -67,12 +88,17 @@ function Game() {
         // eslint-disable-next-line
     }, []);
 
+    // eslint-disable-next-line
     useEffect(() => {
         localStorage.setItem('RECORDS', JSON.stringify(records));
         localStorage.setItem('SHOW_MISTAKES', showMistakes ? "1" : "0");
         localStorage.setItem('SECONDS_SPENT', secondsSpent.toString());
         localStorage.setItem("CELLS", JSON.stringify(cells));
 
+        const dataMusicSoundSaved = JSON.parse(localStorage.getItem('dataMusicSound') as string);
+        if (dataMusicSoundSaved) {
+            setVolume(dataMusicSoundSaved.valueSound / 10);
+        }
 
         if (!finished && isAllCellsDone(cells)) {
             onGameFinished();
@@ -159,6 +185,12 @@ function Game() {
             return;
         }
 
+        if (selectedCell.solution === newValue) {
+            playCorrectSound();
+        } else {
+            playWrongSound();
+        }
+
         const newCells = JSON.parse(JSON.stringify(cells));
         newCells[selectedCell.row][selectedCell.col].value = newValue;
         setCells(newCells);
@@ -202,9 +234,14 @@ function Game() {
         }
 
         const cell = notSolvedCells[Math.floor(Math.random() * notSolvedCells.length)];
-        setSelectedCell(cell);
+        selectCell(cell);
 
         return cell;
+    }
+
+    function selectCell(cell: CellConfigInterface): void {
+        playCellSelectedSound();
+        setSelectedCell(cell);
     }
 
     function solveExactlyOneCell(cells: Array<Array<CellConfigInterface>>): void {
@@ -217,22 +254,23 @@ function Game() {
         setTimeout(() => {
             const newCells = JSON.parse(JSON.stringify(cells));
 
-            //emulate wrong numbers filled
-            if (randomIntFromInterval(1, 6) === 6) {
-                newCells[cell.row][cell.col].value = randomIntFromInterval(1, 9);
-                setCells(newCells);
+            if (randomIntFromInterval(1, 7) === 7) {
+                const newValue = randomIntFromInterval(1, 9);
 
-                newCells[cell.row][cell.col].value = cell.solution;
-                setCells(newCells);
-            } else if (randomIntFromInterval(1, 7) === 7) {
-                newCells[cell.row][cell.col].value = randomIntFromInterval(1, 9);
+                if (newCells[cell.row][cell.col].solution === newValue) {
+                    playCorrectSound();
+                } else {
+                    playWrongSound();
+                }
+                newCells[cell.row][cell.col].value = newValue;
                 setCells(newCells);
             } else {
                 newCells[cell.row][cell.col].value = cell.solution;
                 setCells(newCells);
+                playCorrectSound();
             }
 
-        }, SOLVE_AUTOMATICALLY_CELL_TIMEOUT / randomIntFromInterval(2, 5));
+        }, SOLVE_AUTOMATICALLY_CELL_MIN_TIMEOUT / randomIntFromInterval(1, 5));
     }
 
     function randomIntFromInterval(min: number, max: number): number {
@@ -253,7 +291,7 @@ function Game() {
             if (!isAllCellsDone(newCells)) {
                 solveAutomaticallyStepByStep();
             }
-        }, SOLVE_AUTOMATICALLY_CELL_TIMEOUT);
+        }, SOLVE_AUTOMATICALLY_CELL_MIN_TIMEOUT + randomIntFromInterval(100, 700));
     }
 
     function onGameFinished(): void {
@@ -335,7 +373,7 @@ function Game() {
                                             return <GameCell cellConfig={cellConfig}
                                                              key={rowNumber.toString() + columnNumber.toString()}
                                                              selected={cellConfig ? isSelectedCell(cellConfig) : false}
-                                                             setSelectedCell={setSelectedCell}
+                                                             setSelectedCell={selectCell}
                                             />
                                         })}
                                     </tr>
