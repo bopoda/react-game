@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import NavNewGame from "../nav/NavNewGame";
 import {CellConfigInterface, CellSolutionType, CellValueType} from "./types";
 import getRandomLevel from "../api/levelApi";
@@ -10,6 +10,7 @@ import NavRecords from "../nav/NavRecords";
 
 const FIELD_SIZE = 9;
 const MAX_COUNT_RECORDS = 10;
+const SOLVE_AUTOMATICALLY_CELL_TIMEOUT = 700;
 
 function Game() {
     const [records, setRecords] = useState<number[]>([]);
@@ -18,6 +19,9 @@ function Game() {
     const [selectedCell, setSelectedCell] = useState<CellConfigInterface>();
     const [showMistakes, setShowMistakes] = useState<boolean>(false);
     const [secondsSpent, setSecondsSpent] = useState<number>(0);
+
+    const cellsRef = useRef(cells);
+    cellsRef.current = cells;
 
     useEffect(() => {
         document.addEventListener('keydown', onKeydown);
@@ -68,6 +72,11 @@ function Game() {
         localStorage.setItem('SHOW_MISTAKES', showMistakes ? "1" : "0");
         localStorage.setItem('SECONDS_SPENT', secondsSpent.toString());
         localStorage.setItem("CELLS", JSON.stringify(cells));
+
+
+        if (!finished && isAllCellsDone(cells)) {
+            onGameFinished();
+        }
     });
 
     function range(start: number, end: number): number[] {
@@ -153,10 +162,6 @@ function Game() {
         const newCells = JSON.parse(JSON.stringify(cells));
         newCells[selectedCell.row][selectedCell.col].value = newValue;
         setCells(newCells);
-
-        if (isAllCellsDone(newCells)) {
-            onGameFinished();
-        }
     }
 
     function saveRecord(): void {
@@ -166,6 +171,10 @@ function Game() {
     }
 
     function isAllCellsDone(cells: Array<Array<CellConfigInterface>>): boolean {
+        if (!cells.length) {
+            return false;
+        }
+
         for (const row of cells) {
             for (const cell of row) {
                 if (cell.value !== cell.solution) {
@@ -177,22 +186,74 @@ function Game() {
         return true;
     }
 
-    function solveAllCells(): void {
-        if (finished) {
-            alert('The game is already solved');
-            return;
-        }
+    function getAndSelectRandomNotSolvedCell(cells: Array<Array<CellConfigInterface>>): CellConfigInterface|null {
+        const notSolvedCells = [];
 
-        const newCells = JSON.parse(JSON.stringify(cells));
-
-        for (const row of newCells) {
+        for (const row of cells) {
             for (const cell of row) {
-                cell.value = cell.solution;
+                if (!cell.prefilled && cell.value !== cell.solution) {
+                    notSolvedCells.push(cell);
+                }
             }
         }
 
-        setCells(newCells);
-        onGameFinished();
+        if (!notSolvedCells.length) {
+            return null;
+        }
+
+        const cell = notSolvedCells[Math.floor(Math.random() * notSolvedCells.length)];
+        setSelectedCell(cell);
+
+        return cell;
+    }
+
+    function solveExactlyOneCell(cells: Array<Array<CellConfigInterface>>): void {
+        const cell = getAndSelectRandomNotSolvedCell(cells);
+
+        if (!cell) {
+            return;
+        }
+
+        setTimeout(() => {
+            const newCells = JSON.parse(JSON.stringify(cells));
+
+            //emulate wrong numbers filled
+            if (randomIntFromInterval(1, 6) === 6) {
+                newCells[cell.row][cell.col].value = randomIntFromInterval(1, 9);
+                setCells(newCells);
+
+                newCells[cell.row][cell.col].value = cell.solution;
+                setCells(newCells);
+            } else if (randomIntFromInterval(1, 7) === 7) {
+                newCells[cell.row][cell.col].value = randomIntFromInterval(1, 9);
+                setCells(newCells);
+            } else {
+                newCells[cell.row][cell.col].value = cell.solution;
+                setCells(newCells);
+            }
+
+        }, SOLVE_AUTOMATICALLY_CELL_TIMEOUT / randomIntFromInterval(2, 5));
+    }
+
+    function randomIntFromInterval(min: number, max: number): number {
+        return Math.floor(Math.random() * (max - min + 1) + min);
+    }
+
+    function solveAutomaticallyStepByStep(): void {
+        if (finished) {
+            alert('The game is already solved. Click Start New Game or Restart.');
+            return;
+        }
+
+        setTimeout(() => {
+            const newCells = JSON.parse(JSON.stringify(cellsRef.current));
+
+            solveExactlyOneCell(newCells);
+
+            if (!isAllCellsDone(newCells)) {
+                solveAutomaticallyStepByStep();
+            }
+        }, SOLVE_AUTOMATICALLY_CELL_TIMEOUT);
     }
 
     function onGameFinished(): void {
@@ -287,7 +348,7 @@ function Game() {
                 <div className="game-controls-wrapper">
                     <nav>
                         <NavNewGame restartCells={restartCells} />
-                        <input type="button" value="Solve all automatically" onClick={solveAllCells} />
+                        <input type="button" value="Solve all automatically" onClick={solveAutomaticallyStepByStep} />
                         <NavHotkeys/>
                         <NavRecords records={records}/>
                     </nav>
