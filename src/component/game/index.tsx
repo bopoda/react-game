@@ -215,6 +215,20 @@ function Game() {
         }
     }
 
+    function restartCells(): void {
+        const newCells = JSON.parse(JSON.stringify(cells));
+
+        for (const row of newCells) {
+            for (const cell of row) {
+                if (!cell.prefilled) {
+                    cell.value = 0;
+                }
+            }
+        }
+
+        setCells(newCells);
+    }
+
     return (
         <div className="sudoku-wrapper">
             <div className="game-info-wrapper flex-wrapper">
@@ -267,7 +281,7 @@ function Game() {
                 </div>
                 <div className="game-controls-wrapper">
                     <nav>
-                        <NavNewGame/>
+                        <NavNewGame restartCells={restartCells} />
                         <input type="button" value="Solve all automatically" onClick={solveAllCells} />
                         <NavHotkeys/>
                         <NavRecords records={records}/>

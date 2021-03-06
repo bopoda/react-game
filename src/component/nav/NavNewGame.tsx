@@ -1,6 +1,10 @@
 import React, {SyntheticEvent, useEffect, useState} from "react";
 
-function NavNewGame() {
+interface Props {
+    restartCells: () => void
+}
+
+function NavNewGame(props: Props) {
     const [showNewGameMenu, setShowNewGameMenu] = useState<boolean>(false);
 
     useEffect(() => {
@@ -18,11 +22,22 @@ function NavNewGame() {
         e.preventDefault();
     }
 
+    function onNewGameClick(e: SyntheticEvent): void {
+        e.preventDefault();
+
+        localStorage.removeItem('CELLS');
+        localStorage.removeItem('SECONDS_SPENT');
+
+        window.document.location.reload();
+    }
+
     function onRestart(e: SyntheticEvent): void {
         e.preventDefault();
 
         localStorage.removeItem('CELLS');
         localStorage.removeItem('SECONDS_SPENT');
+
+        props.restartCells();
 
         window.document.location.reload();
     }
@@ -50,8 +65,12 @@ function NavNewGame() {
                     </li>
                     <li><a href="/#"
                            className="new-game-menu-new"
-                           onClick={onRestart}
+                           onClick={onNewGameClick}
                     >New Game</a></li>
+                    <li><a href="/#"
+                           className="new-game-menu-restart"
+                           onClick={onRestart}
+                    >Restart</a></li>
                     <li><a href="/#"
                            className="new-game-menu-cancel"
                            onClick={onCancel}
